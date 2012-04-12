@@ -18,7 +18,7 @@
 
 (defn vertical-pair? [[a b] [c d]] 
   (if (= b d)
-    (= 1 (abs (- a 0)))
+    (= 1 (abs (- a c)))
     false))
 
 (defn- generate-horizontal-for-row [columns row]
@@ -57,9 +57,72 @@
 (defn can-play-vertical? [board]
   (can-play-horizontal? (apply map vector board)))
 
+(defn two-d-get [coll [a b]]
+  (get (get coll a) b))
+
+(defn location-empty? [board pos-a pos-b]
+  (and (nil? (two-d-get board pos-a))
+       (nil? (two-d-get board pos-b))))
+
 (defn board [rows columns]
   (vec (repeat rows
                (vec
-                 (take 5 (repeat nil))))))
+                 (take columns (repeat nil))))))
 
-(defn add-piece)
+(defn add-piece [board piece a b]
+  (-> board
+    (assoc-in a piece)
+    (assoc-in b piece)))
+
+(defprotocol CrossCramGame
+  (over? [this])
+  (play-piece [this player pos-a pos-b])
+  (next-player [this])
+  )
+
+(defn opposite [player]
+  (match/match player
+               :horizontal :vertical
+               :vertical :horizontal))
+
+(defrecord Game [board
+                 next-player
+                 num-plays]
+  CrossCramGame
+  (over? [this]
+    (match/match next-player
+                 :horizontal (not (can-play-horizontal? board))
+                 :vertical  (not (can-play-vertical? board))))
+
+  (play-piece [this player pos-a pos-b]
+    (cond
+      ;; is the game already over?
+      (over? this) (throw (Exception. "The game is already over"))
+
+      ;; is someone trying to play out of turn?
+      (not (= player next-player)) (throw (Exception. (str "It's not " player "'s turn")))
+
+      ;; are the two points valid for this player?
+      (not (match/match player
+                        :horizontal (horizontal-pair? pos-a pos-b)
+                        :vertical (vertical-pair? pos-a pos-b)))
+      (throw (Exception. "Not a valid vertical or horizontal shape"))
+
+      ;; is someone trying to play on a spot that is already
+      ;; occupied?
+      (not (location-empty? board pos-a pos-b)) (throw (Exception. "Can't move here, it's occupied"))
+
+      ;; ok, play the piece!
+      true
+      (-> this
+        (assoc :board (add-piece board "foo" pos-a pos-b))
+        (update-in [:num-plays] inc)
+        (assoc :next-player (opposite next-player)))))
+
+  (next-player [this] next-player)
+  )
+
+(defn new-game [rows columns start-player]
+  (Game. (board rows columns)
+         start-player
+         0))
