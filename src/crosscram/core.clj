@@ -76,7 +76,7 @@
 
 (defprotocol CrossCramGame
   (over? [this])
-  (play-piece [this player pos-a pos-b])
+  (play-piece [this pos-a pos-b])
   (next-player [this])
   )
 
@@ -94,16 +94,13 @@
                  :horizontal (not (can-play-horizontal? board))
                  :vertical  (not (can-play-vertical? board))))
 
-  (play-piece [this player pos-a pos-b]
+  (play-piece [this pos-a pos-b]
     (cond
       ;; is the game already over?
       (over? this) (throw (Exception. "The game is already over"))
 
-      ;; is someone trying to play out of turn?
-      (not (= player next-player)) (throw (Exception. (str "It's not " player "'s turn")))
-
       ;; are the two points valid for this player?
-      (not (match/match player
+      (not (match/match next-player
                         :horizontal (horizontal-pair? pos-a pos-b)
                         :vertical (vertical-pair? pos-a pos-b)))
       (throw (Exception. "Not a valid vertical or horizontal shape"))
@@ -115,12 +112,14 @@
       ;; ok, play the piece!
       true
       (-> this
-        (assoc :board (add-piece board "foo" pos-a pos-b))
+;;        (assoc :board (add-piece board {:move-number num-plays
+;;                                        :location [pos-a pos-b]}
+;;                                 pos-a pos-b))
+        (assoc :board (add-piece board (inc num-plays) pos-a pos-b))
         (update-in [:num-plays] inc)
         (assoc :next-player (opposite next-player)))))
 
-  (next-player [this] next-player)
-  )
+  (next-player [this] next-player))
 
 (defn new-game [rows columns start-player]
   (Game. (board rows columns)
