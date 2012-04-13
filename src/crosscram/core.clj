@@ -87,7 +87,8 @@
 
 (defrecord Game [board
                  next-player
-                 num-plays]
+                 num-plays
+                 history]
   CrossCramGame
   (over? [this]
     (match/match next-player
@@ -107,7 +108,8 @@
 
       ;; is someone trying to play on a spot that is already
       ;; occupied?
-      (not (location-empty? board pos-a pos-b)) (throw (Exception. "Can't move here, it's occupied"))
+      (not (location-empty? board pos-a pos-b)) (throw (Exception.
+                                                         "Can't move here, it's occupied"))
 
       ;; ok, play the piece!
       true
@@ -117,6 +119,7 @@
 ;;                                 pos-a pos-b))
         (assoc :board (add-piece board (inc num-plays) pos-a pos-b))
         (update-in [:num-plays] inc)
+        (update-in [:history] #(conj % {:player next-player :move [pos-a pos-b]}))
         (assoc :next-player (opposite next-player)))))
 
   (next-player [this] next-player))
@@ -124,4 +127,5 @@
 (defn new-game [rows columns start-player]
   (Game. (board rows columns)
          start-player
-         0))
+         0
+         []))
