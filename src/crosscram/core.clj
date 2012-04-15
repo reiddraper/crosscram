@@ -128,3 +128,13 @@
       g
       (let [new-game (apply play-piece g ((first bot-funs) g))]
         (recur new-game (rest bot-funs))))))
+
+(defn play-symmetric [game bot-a bot-b max-games-before-draw]
+  (loop [to-go max-games-before-draw]
+    (if (= 0 to-go)
+      {:winner :draw :rounds (- max-games-before-draw to-go)}
+      (let [g1 (winner (play game bot-a bot-b))
+            g2 (winner (play game bot-b bot-a))]
+        (if (= g1 g2)
+          {:winner g1 :rounds (+ 1 (- max-games-before-draw to-go))}
+          (recur (dec to-go)))))))
