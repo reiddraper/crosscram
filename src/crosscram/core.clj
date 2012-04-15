@@ -74,58 +74,43 @@
     (assoc-in a piece)
     (assoc-in b piece)))
 
-(defprotocol CrossCramGame
-  (over? [this])
-  (play-piece [this pos-a pos-b])
-  (next-player [this])
-  )
-
 (defn opposite [player]
   (match/match player
                :horizontal :vertical
                :vertical :horizontal))
 
-(defrecord Game [board
-                 next-player
-                 num-plays
-                 history]
-  CrossCramGame
-  (over? [this]
-    (match/match next-player
-                 :horizontal (not (can-play-horizontal? board))
-                 :vertical  (not (can-play-vertical? board))))
+(defn over? [game]
+  (match/match (:next-player game)
+               :horizontal (not (can-play-horizontal? (:board game)))
+               :vertical  (not (can-play-vertical? (:board game)))))
 
-  (play-piece [this pos-a pos-b]
-    (cond
-      ;; is the game already over?
-      (over? this) (throw (Exception. "The game is already over"))
+(defn play-piece [game pos-a pos-b]
+  (cond
+    ;; is the game already over?
+    (over? game) (throw (Exception. "The game is already over"))
 
-      ;; are the two points valid for this player?
-      (not (match/match next-player
-                        :horizontal (horizontal-pair? pos-a pos-b)
-                        :vertical (vertical-pair? pos-a pos-b)))
-      (throw (Exception. "Not a valid vertical or horizontal shape"))
+    ;; are the two points valid for this player?
+    (not (match/match (:next-player game)
+                      :horizontal (horizontal-pair? pos-a pos-b)
+                      :vertical (vertical-pair? pos-a pos-b)))
+    (throw (Exception. "Not a valid vertical or horizontal shape"))
 
-      ;; is someone trying to play on a spot that is already
-      ;; occupied?
-      (not (location-empty? board pos-a pos-b)) (throw (Exception.
-                                                         "Can't move here, it's occupied"))
+    ;; is someone trying to play on a spot that is already
+    ;; occupied?
+    (not (location-empty? (:board game) pos-a pos-b)) (throw (Exception.
+                                                       "Can't move here, it's occupied"))
 
-      ;; ok, play the piece!
-      true
-      (-> this
-;;        (assoc :board (add-piece board {:move-number num-plays
-;;                                        :location [pos-a pos-b]}
-;;                                 pos-a pos-b))
-        (assoc :board (add-piece board (inc num-plays) pos-a pos-b))
-        (update-in [:num-plays] inc)
-        (update-in [:history] #(conj % {:player next-player :move [pos-a pos-b]}))
-        (assoc :next-player (opposite next-player)))))
-
-  (next-player [this] next-player))
+    ;; ok, play the piece!
+    true
+    (-> game
+      ;;        (assoc :board (add-piece board {:move-number num-plays
+      ;;                                        :location [pos-a pos-b]}
+      ;;                                 pos-a pos-b))
+      (assoc :board (add-piece (:board game) (inc (count (:history game))) pos-a pos-b))
+      (update-in [:history] #(conj % {:player (:next-player game) :move [pos-a pos-b]}))
+      (assoc :next-player (opposite (:next-player game)))))) 
 
 (defn new-game [rows columns start-player]
-  (Game. (board rows columns)
-         start-player
-         0
-         []))
+  {:board (board rows columns)
+   :next-player start-player
+   :history []})
