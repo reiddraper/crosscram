@@ -84,6 +84,10 @@
                :horizontal (not (can-play-horizontal? (:board game)))
                :vertical  (not (can-play-vertical? (:board game)))))
 
+(defn winner [game]
+  (when (over? game)
+    (:player (last (:history game)))))
+
 (defn play-piece [game pos-a pos-b]
   (cond
     ;; is the game already over?
