@@ -93,7 +93,7 @@
     (not (match/match (:next-player game)
                       :horizontal (horizontal-pair? pos-a pos-b)
                       :vertical (vertical-pair? pos-a pos-b)))
-    (throw (Exception. "Not a valid vertical or horizontal shape"))
+    (throw (Exception. (str "Not a valid vertical or horizontal shape: " pos-a pos-b)))
 
     ;; is someone trying to play on a spot that is already
     ;; occupied?
@@ -112,5 +112,15 @@
 
 (defn new-game [rows columns start-player]
   {:board (board rows columns)
+   :rows rows
+   :columns columns
    :next-player start-player
    :history []})
+
+(defn play [game bot-a bot-b]
+  (loop [g game
+         bot-funs (cycle [bot-a bot-b])]
+    (if (over? g)
+      g
+      (let [new-game (apply play-piece g ((first bot-funs) g))]
+        (recur new-game (rest bot-funs))))))
