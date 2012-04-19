@@ -32,14 +32,12 @@
           [[x column] [(+ 1 x) column]])))
 
 (defn generate-horizontal [rows columns]
-  (apply concat
-         (map (partial generate-horizontal-for-row columns)
-              (range rows))))
+  (mapcat (partial generate-horizontal-for-row columns)
+          (range rows)))
 
 (defn generate-vertical [rows columns]
-  (apply concat
-         (map (partial generate-vertical-for-column rows)
-              (range columns))))
+  (mapcat (partial generate-vertical-for-column rows)
+          (range columns)))
 
 (defn- two-nil? [coll]
   (= true (reduce (fn [acc elem]
@@ -102,7 +100,7 @@
     ;; is someone trying to play on a spot that is already
     ;; occupied?
     (not (location-empty? (:board game) pos-a pos-b)) (throw (Exception.
-                                                       "Can't move here, it's occupied"))
+                                                               "Can't move here, it's occupied"))
 
     ;; ok, play the piece!
     true
