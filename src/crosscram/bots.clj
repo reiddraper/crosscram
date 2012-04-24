@@ -35,4 +35,4 @@
     (apply crosscram.core/new-game args)
     brute-force-moves
     random-moves
-    {} 100)))
+    100)))

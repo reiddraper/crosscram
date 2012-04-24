@@ -61,10 +61,10 @@
     [:vertical :horizontal ] {:bot-a 0 :bot-b 1 :draws 0}
     [_ _] {:bot-a 0 :bot-b 0 :draws 1}))
 
-(defn play-symmetric [game bot-a bot-b scoreboard games-to-play]
-  (if (= 0 games-to-play)
-    scoreboard
-    (let [g1 (winner (play game bot-a bot-b))
-          g2 (winner (play game bot-b bot-a))]
-      (let [newboard (merge-with + scoreboard (score g1 g2))]
-        (play-symmetric game bot-a bot-b newboard (dec games-to-play))))))
+(defn play-symmetric [game bot-a bot-b games-to-play]
+  (loop [scoreboard {}]
+	(if (= games-to-play (apply + (vals scoreboard)))
+	  scoreboard
+      (let [g1 (winner (play game bot-a bot-b))
+            g2 (winner (play game bot-b bot-a))]
+        (recur (merge-with + scoreboard (score g1 g2)))))))
