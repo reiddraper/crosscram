@@ -59,18 +59,7 @@
   (match/match [game1 game2]
     [:horizontal :vertical ] {:bot-a 1 :bot-b 0 :draws 0}
     [:vertical :horizontal ] {:bot-a 0 :bot-b 1 :draws 0}
-    [:horizontal :horizontal ] {:bot-a 0 :bot-b 0 :draws 1}
-    [:vertical :vertical ] {:bot-a 0 :bot-b 0 :draws 1}
-    ;; TODO: not sure why,
-    ;; by eliminating the two lines
-    ;; above this comment
-    ;; and replacing them with the
-    ;; line below throws an exception:
-    ;; java.lang.RuntimeException: java.lang.Exception: No match found.
-    ;; Followed 1 branches. Breadcrumbs:
-    ;;
-    ;;[_ _] (recur (dec to-go))
-    ))
+    [_ _] {:bot-a 0 :bot-b 0 :draws 1}))
 
 (defn play-symmetric [game bot-a bot-b scoreboard games-to-play]
   (if (= 0 games-to-play)
