@@ -38,7 +38,7 @@
     (-> game
       (assoc :board (board/add-piece (:board game) (inc (count (:history game))) pos-a pos-b))
       (update-in [:history] #(conj % {:player (:next-player game) :move [pos-a pos-b]}))
-      (assoc :next-player (opposite (:next-player game)))))) 
+      (assoc :next-player (opposite (:next-player game))))))
 
 (defn new-game [rows columns start-player]
   {:board (board/board rows columns)
@@ -55,24 +55,28 @@
       (let [new-game (apply play-piece g ((first bot-funs) g))]
         (recur new-game (rest bot-funs))))))
 
-(defn play-symmetric [game bot-a bot-b max-games-before-draw]
-  (loop [to-go max-games-before-draw]
-    (if (= 0 to-go)
-      {:winner :draw :rounds (- max-games-before-draw to-go)}
-      (let [g1 (winner (play game bot-a bot-b))
-            g2 (winner (play game bot-b bot-a))]
-        (match/match [g1 g2]
-                     [:horizontal :vertical] {:winner :bot-a :rounds (+ 1 (- max-games-before-draw to-go))}
-                     [:vertical :horizontal] {:winner :bot-b :rounds (+ 1 (- max-games-before-draw to-go))}
-                     [:horizontal :horizontal] (recur (dec to-go))
-                     [:vertical :vertical] (recur (dec to-go))
-                     ;; TODO: not sure why,
-                     ;; by eliminating the two lines
-                     ;; above this comment
-                     ;; and replacing them with the
-                     ;; line below throws an exception:
-                     ;; java.lang.RuntimeException: java.lang.Exception: No match found.
-                     ;; Followed 1 branches. Breadcrumbs:
-                     ;;
-                     ;;[_ _] (recur (dec to-go))
-                     )))))
+(defn score [game1 game2]
+  (match/match [game1 game2]
+    [:horizontal :vertical ] {:bot-a 1 :bot-b 0 :draws 0}
+    [:vertical :horizontal ] {:bot-a 0 :bot-b 1 :draws 0}
+    [:horizontal :horizontal ] {:bot-a 0 :bot-b 0 :draws 1}
+    [:vertical :vertical ] {:bot-a 0 :bot-b 0 :draws 1}
+    ;; TODO: not sure why,
+    ;; by eliminating the two lines
+    ;; above this comment
+    ;; and replacing them with the
+    ;; line below throws an exception:
+    ;; java.lang.RuntimeException: java.lang.Exception: No match found.
+    ;; Followed 1 branches. Breadcrumbs:
+    ;;
+    ;;[_ _] (recur (dec to-go))
+    ))
+
+(defn play-symmetric [game bot-a bot-b scoreboard games-to-play]
+  (if (= 0 games-to-play)
+    scoreboard
+    (let [g1 (winner (play game bot-a bot-b))
+          g2 (winner (play game bot-b bot-a))]
+      (println "Played a game.")
+      (let [newboard (merge-with + scoreboard (score g1 g2))]
+        (play-symmetric game bot-a bot-b newboard (dec games-to-play))))))
