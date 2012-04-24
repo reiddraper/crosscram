@@ -35,5 +35,4 @@
     (apply crosscram.core/new-game args)
     brute-force-moves
     random-moves
-    {:bot-a-wins 0 :bot-b-wins 0 :draws 1}
-    10)))
+    {} 100)))

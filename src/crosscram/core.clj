@@ -77,6 +77,5 @@
     scoreboard
     (let [g1 (winner (play game bot-a bot-b))
           g2 (winner (play game bot-b bot-a))]
-      (println "Played a game.")
       (let [newboard (merge-with + scoreboard (score g1 g2))]
         (play-symmetric game bot-a bot-b newboard (dec games-to-play))))))
