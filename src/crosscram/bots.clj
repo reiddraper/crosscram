@@ -12,7 +12,6 @@
     (loop [moves (match/match (:next-player game)
                               :horizontal (board/generate-horizontal rows columns)
                               :vertical (board/generate-vertical rows columns))]
-
       (if (apply board/location-empty? (:board game) (first moves))
         (first moves)
         (recur (rest moves))))))

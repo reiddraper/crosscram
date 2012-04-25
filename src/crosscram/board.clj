@@ -57,6 +57,16 @@
   (and (nil? (two-d-get board pos-a))
        (nil? (two-d-get board pos-b))))
 
+(defn available-horizontal [game]
+  (filter
+    (fn [arg] (location-empty? (:board game) (first arg) (last arg)))
+    (generate-horizontal (:rows game) (:columns game))))
+
+(defn available-vertical [game]
+  (filter
+    (fn [arg] (location-empty? (:board game) (first arg) (last arg)))
+    (generate-vertical (:rows game) (:columns game))))
+
 (defn board [rows columns]
   (vec (repeat rows
                (vec
