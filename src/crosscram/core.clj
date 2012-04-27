@@ -17,6 +17,11 @@
   (when (over? game)
     (:player (last (:history game)))))
 
+(defn next-player [game]
+  (match/match (:next-player game)
+                :horizontal "horizontal"
+                :vertical "vertical"))
+
 (defn play-piece [game pos-a pos-b]
   (cond
     ;; is the game already over?
@@ -26,7 +31,7 @@
     (not (match/match (:next-player game)
                       :horizontal (board/horizontal-pair? pos-a pos-b)
                       :vertical (board/vertical-pair? pos-a pos-b)))
-    (throw (Exception. (str "Not a valid vertical or horizontal shape: " pos-a pos-b)))
+    (throw (Exception. (str "Not a valid " (next-player game) " shape: " pos-a pos-b)))
 
     ;; is someone trying to play on a spot that is already
     ;; occupied?
@@ -57,8 +62,8 @@
 
 (defn score [game1 game2]
   (match/match [game1 game2]
-    [:horizontal :vertical ] {:bot-a 1 :bot-b 0 :draws 0}
-    [:vertical :horizontal ] {:bot-a 0 :bot-b 1 :draws 0}
+    [:horizontal :vertical] {:bot-a 1 :bot-b 0 :draws 0}
+    [:vertical :horizontal] {:bot-a 0 :bot-b 1 :draws 0}
     [_ _] {:bot-a 0 :bot-b 0 :draws 1}))
 
 (defn play-symmetric [game bot-a bot-b games-to-play]
