@@ -20,7 +20,8 @@
 (defn next-player [game]
   (match/match (:next-player game)
                 :horizontal "horizontal"
-                :vertical "vertical"))
+                :vertical "vertical"
+                _ (:next-player game)))
 
 (defn play-piece [game pos-a pos-b]
   (cond
