@@ -24,27 +24,31 @@
     (not (< -1 c (count (nth board r)))) false
     :else (nil? (nth (nth board r) c))))
 
-(defn- num-neighbors [[a b] board direction]
+(defn- num-neighbors [[r c] board direction]
   (+
-    (if-not (valid-empty-space? board (if (= direction :horizontal) [a (inc b)] [(inc a) b]))
+    (if-not (valid-empty-space? board (if (= direction :horizontal) [r (inc c)] [(inc r) c]))
       1 0)
-    (if-not (valid-empty-space? board (if (= direction :horizontal) [a (dec b)] [(dec a) b]))
+    (if-not (valid-empty-space? board (if (= direction :horizontal) [r (dec c)] [(dec r) c]))
       1 0)))
 
 (defn- distance-from-opponent [[pos-a pos-b] game]
   (+ (num-neighbors pos-a (:board game) (:next-player game))
     (num-neighbors pos-b (:board game) (:next-player game))))
 
-(defn- score-for-avoiding-crowded-spaces [[a b] board direction]
-  (let [pos (if (= direction :horizontal) a b)
-        arr (if (= direction :horizontal) (map (fn [row] (get row b)) board) (get board a))]
+(defn- score-for-avoiding-crowded-spaces [[r c] board direction]
+  (let [pos (if (= direction :horizontal) r c)
+        arr (if (= direction :horizontal) (map (fn [row] (get row c)) board) (get board r))]
   (+
     (cond
+      (= (+ pos 1) (count arr)) 0
       (not (nil? (nth arr (+ pos 1)))) 0
+      (= (+ pos 2) (count arr)) 2
       (not (nil? (nth arr (+ pos 2)))) 2
       :else 1)
     (cond
+      (= (- pos 1) -1) 0
       (not (nil? (nth arr (- pos 1)))) 0
+      (= (- pos 2) -1) 2
       (not (nil? (nth arr (- pos 2)))) 2
       :else 1))))
 
