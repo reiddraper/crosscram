@@ -18,11 +18,17 @@
 ;; My own bot
 ;;
 
+(defn- valid-empty-space? [board [r c]]
+  (cond
+    (not (< -1 r (count board))) false
+    (not (< -1 c (count (nth board r)))) false
+    :else (nil? (nth (nth board r) c))))
+
 (defn- num-neighbors [[a b] board direction]
   (+
-    (if-not (nil? (board/two-d-get board (if (= direction :horizontal) [a (inc b)] [(inc a) b])))
+    (if-not (valid-empty-space? board (if (= direction :horizontal) [a (inc b)] [(inc a) b]))
       1 0)
-    (if-not (nil? (board/two-d-get board (if (= direction :horizontal) [a (dec b)] [(dec a) b])))
+    (if-not (valid-empty-space? board (if (= direction :horizontal) [a (dec b)] [(dec a) b]))
       1 0)))
 
 (defn- distance-from-opponent [[pos-a pos-b] game]
