@@ -28,8 +28,21 @@
     (borders-an-opponent (first piece) (:board game) (:next-player game))
     (borders-an-opponent (second piece) (:board game) (:next-player game))))
 
+(defn- score-for-avoiding-crowded-spaces [[a b] board direction]
+  (let [pos (if (= direction :horizontal) a b)
+        arr (if (= direction :horizontal) (map (fn [row] (get row b)) board) (get board a))]
+  (+
+    (cond
+      (not (nil? (nth arr (+ pos 1)))) 0
+      (not (nil? (nth arr (+ pos 2)))) 2
+      :else 1)
+    (cond
+      (not (nil? (nth arr (- pos 1)))) 0
+      (not (nil? (nth arr (- pos 2)))) 2
+      :else 1))))
+
 (defn- distance-from-self [piece game]
-  0)
+  (score-for-avoiding-crowded-spaces piece (:board game) (:next-player game)))
 
 (defn- score [piece game]
   (+ (distance-from-self piece game) (distance-from-opponent piece game)))
