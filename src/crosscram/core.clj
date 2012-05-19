@@ -47,11 +47,11 @@
       (assoc :next-player
         (opposite (:next-player game))))))
 
-(defn new-game [rows columns start-player]
+(defn new-game [rows columns]
   {:board (board/board rows columns)
    :rows rows
    :columns columns
-   :next-player start-player
+   :next-player :horizontal
    :history []})
 
 (defn play [game bot-a bot-b]
