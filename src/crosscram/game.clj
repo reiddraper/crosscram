@@ -27,7 +27,6 @@ A gamestate value (which is provided to the bot) is a map of:
 
 This will sometimes simply be called a game value.")
 
-
 ;; Implementation details
 
 ;; In 2 dimensions:
@@ -39,4 +38,32 @@ This will sometimes simply be called a game value.")
 
 ;; TODO(timmc:2012-05-23) Should we canonicalize the order of the squares in
 ;; the domino on receipt from a bot?
+
+(defn board
+  "Given a dimensions vector of [rows, columns], generate an empty board."
+  [[rows columns]]
+  (vec (repeat rows (vec (repeat columns nil))))) ;; TODO dimension-agnostic
+
+(defn domino-squares
+  "Return a sequence of the coordinates occupied by a domino."
+  [domino]
+  (seq domino))
+
+(defn ^:internal set-square
+  "Set the value of a square in a board."
+  [board square val]
+  (assoc-in board square val))
+
+(defn place-domino
+  "Place a domino on the board, assumed to be a valid move. The returned
+board will have the specified move ordinal in the squares covered by the
+domino."
+  [board domino move-ord]
+  (reduce #(set-square % %2 move-ord) board (domino-squares domino)))
+
+(defn lookup-square
+  "Discover if a board position is empty. Given a location [r c] on a board,
+return the ordinal of the move that filled it, or nil if empty."
+  [board square]
+  (get-in board square nil))
 
