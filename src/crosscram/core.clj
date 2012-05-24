@@ -15,12 +15,6 @@
   (when (over? game)
     (:player (last (:history game)))))
 
-(defn next-player [game]
-  (match/match (:next-player game)
-                :horizontal "horizontal"
-                :vertical "vertical"
-                _ (:next-player game)))
-
 (defn play-piece [game pos-a pos-b]
   (cond
     ; is the game already over?
@@ -29,7 +23,7 @@
 
     ; do the two points form a valid piece?
     (not (board/horizontal-pair? pos-a pos-b))
-      (throw (Exception. (str "Not a valid " (next-player game) " shape: " pos-a pos-b)))
+      (throw (Exception. (str "Not a valid " (:next-player game) " shape: " pos-a pos-b)))
 
     ; is someone trying to play on a spot that is already
     ; occupied?
