@@ -49,6 +49,27 @@ This will sometimes simply be called a game value.")
   [domino]
   (seq domino))
 
+(defn valid-domino?
+  "Return true iff the value is a valid domino."
+  [val]
+  ;; TODO(timmc): loosen restriction on vector-ness and accept
+  ;; anything seqable? Maybe write a "cleaner" fn that returns
+  ;; a cleaned-up domnino, or nil.
+  (let [vec2? #(and (sequential? %)
+                    (associative? %)
+                    (counted? %)
+                    (= (count %) 2)) ;; TODO dimension-agnostic
+        natural? #(and (integer? %) (<= 0 %))
+        xor2 #(or (and %1 (not %2))
+                  (and %2 (not %1)))
+        abs #(if (> 0 %) (- %) %)]
+    (and (vec2? val)
+         (every? vec2? val)
+         (every? natural? (apply concat val))
+         (let [[[r0 c0] [r1 c1]] val]
+           (xor2 (= (abs (- r0 r1)) 1)
+                 (= (abs (- c0 c1)) 1))))))
+
 (defn ^:internal set-square
   "Set the value of a square in a board."
   [board square val]
@@ -63,7 +84,14 @@ domino."
 
 (defn lookup-square
   "Discover if a board position is empty. Given a location [r c] on a board,
-return the ordinal of the move that filled it, or nil if empty."
+return the ordinal of the move that filled it, or nil if empty. Invalid
+coordinates produce ::outside-board value."
   [board square]
-  (get-in board square nil))
+  (get-in board square ::outside-board))
 
+(defn valid-move?
+  "Checks if the domino would be a valid move for the board (contained
+by board, does not overlap other pieces.) Assumes the domino is an
+otherwise valid piece."
+  [board domino]
+  (every? #(nil? (lookup-square board %)) (domino-squares domino)))
