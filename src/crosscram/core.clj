@@ -64,8 +64,8 @@
 
 (defn play-symmetric [game bot-a bot-b games-to-play]
   (loop [scoreboard {}]
-	(if (= games-to-play (apply + (vals scoreboard)))
-	  scoreboard
+    (if (= games-to-play (apply + (vals scoreboard)))
+      scoreboard
       (let [g1 (winner (play game bot-a bot-b))
             g2 (winner (play game bot-b bot-a))]
         (recur (merge-with + scoreboard (score g1 g2)))))))
