@@ -10,3 +10,7 @@ gives the second player a transposed view of the board.)")
 
 ;; TODO(timmc:2012-05-23) Decide on tournament rules for bots throwing
 ;; exceptions, returning nil, returning bad dominoes...
+
+;; TODO(timme:2012-05-24) Wait, how would we even decide which player won a
+;; 3-player game? Last player to place a tile before someone fails, or last
+;; player standing after successive elimination?
