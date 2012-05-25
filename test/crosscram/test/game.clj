@@ -52,6 +52,23 @@
   (is (horizontal-space? (place-domino (mk-board [2 3]) [[0 2] [1 2]] 0)))
   (is (horizontal-space? (place-domino (mk-board [2 3]) [[0 1] [0 2]] 0))))
 
+(deftest rotations
+  (let [d [[1 2] [0 2]]]
+    (is (= (rotate-domino d 1) [[2 1] [2 0]]))
+    (is (= (rotate-domino d 0) d))
+    (is (= (rotate-domino d 1) (rotate-domino d -3)))
+    (is (= (rotate-domino d 4) (rotate-domino d 18))))
+  (let [p [[3 4] [2 4]]
+        b57 (mk-board [5 7])
+        move0 (place-domino b57 p 0)]
+    (is (= (place-domino b57 p 0)
+           (rotate-board (place-domino (rotate-board b57 1)
+                                       (rotate-domino p 1) 0)
+                         1)))
+    (is (= (rotate-board move0 0) move0))
+    (is (= (rotate-board move0 1) (rotate-board move0 -3)))
+    (is (= (rotate-board move0 4) (rotate-board move0 18)))))
+
 (deftest validity-moves
   (let [single (place-domino (mk-board [4 4]) [[1 1] [2 1]] 0)]
     (are [p e] (= (valid-move? single p) (boolean e))

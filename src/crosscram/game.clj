@@ -47,6 +47,7 @@ This will sometimes simply be called a game value.")
 ;;;; Utils
 
 (defn- abs [x] (if (< x 0) (- x) x))
+(defn transpose [vv] (vec (apply map vector vv)))
 
 ;;;; Dominoes
 
@@ -83,12 +84,28 @@ otherwise valid."
   (let [[[r0 c0] [r1 c1]] domino]
     (and (= r0 r1) (= 1 (abs (- c0 c1))))))
 
+(defn rotate-domino
+  "Rotate a domino from player 0's perspective to the specified player's
+perspective. Player ID will be used modulo 2."
+  [domino player-id]
+  (if (zero? (mod player-id 2))
+    domino
+    (vec (map (comp vec reverse) domino))))
+
 ;;;; Boards
 
 (defn mk-board
   "Given a dimensions vector of [rows, columns], generate an empty board."
   [[rows columns]]
   (vec (repeat rows (vec (repeat columns nil))))) ;; TODO dimension-agnostic
+
+(defn rotate-board
+  "Rotate a board from player 0's perspective to the specified player's
+perspective. Player ID will be used modulo 2."
+  [board player-id]
+  (if (zero? (mod player-id 2))
+    board
+    (transpose board)))
 
 (defn horizontal-space?
   "Return logical true if there is at least one place for a horizontal move."
