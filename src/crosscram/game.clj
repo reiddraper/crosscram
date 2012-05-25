@@ -107,10 +107,19 @@ perspective. Player ID will be used modulo 2."
     board
     (transpose board)))
 
+(defn all-horiz-spaces
+  "Generate a lazy seq of all possible horizontal moves."
+  [board]
+  (for [[r row] (map-indexed vector board)
+        found (keep-indexed (fn [c pair] (when (= [nil nil] pair)
+                                           [[r c] [r (inc c)]]))
+                            (partition 2 1 row))]
+    found))
+
 (defn horizontal-space?
   "Return logical true if there is at least one place for a horizontal move."
   [board]
-  (some (fn [row] (some (partial = [nil nil]) (partition 2 1 row))) board))
+  (boolean (seq (all-horiz-spaces board))))
 
 (defn lookup-square
   "Discover if a board position is empty. Given a location [r c] on a board,

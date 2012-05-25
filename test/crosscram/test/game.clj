@@ -45,6 +45,12 @@
     (is (= (lookup-square move0 [1 1]) nil))))
 
 (deftest inspection
+  (is (= (set (map set (all-horiz-spaces (place-domino (mk-board [2 4])
+                                                       [[1 2] [1 3]] 0))))
+         #{#{[0 0] [0 1]} #{[0 1] [0 2]} #{[0 2] [0 3]} #{[1 0] [1 1]}}))
+  (is (= (count (all-horiz-spaces (place-domino (mk-board [5 3])
+                                                [[1 1] [2 1]] 0)))
+         6))
   (is (horizontal-space? (mk-board [3 4])))
   (is (not (horizontal-space? (mk-board [1 1]))))
   (is (horizontal-space? (place-domino (mk-board [2 3]) [[0 0] [1 0]] 0)))
