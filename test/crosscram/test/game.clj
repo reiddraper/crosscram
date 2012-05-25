@@ -2,23 +2,8 @@
   (:use clojure.test
         crosscram.game))
 
-(deftest board-manip
-  (let [empty (mk-board [2 3])
-        tile [[0 2] [1 2]]
-        move0 (place-domino empty tile 0)]
-    ;; impl
-    (is (= empty [[nil nil nil] [nil nil nil]]))
-    (is (= move0 [[nil nil 0] [nil nil 0]]))
-    ;; impl - non-vertical
-    (is (= (place-domino empty [[0 0] [0 1]] 5)
-           [[5 5 nil] [nil nil nil]]))
-    ;; api
-    (is (= (lookup-square empty [0 2]) nil))
-    (is (= (lookup-square move0 [0 2]) 0))
-    (is (= (lookup-square move0 [1 2]) 0))
-    (is (= (lookup-square move0 [1 1]) nil))))
-
-(deftest validity-dominoes
+(deftest dominoes
+  ;; validity
   (are [p e] (= (valid-domino? p) (boolean e))
        [[0 0] [1 0]] true
        [[2 9] [1 9]] true
@@ -36,9 +21,28 @@
        ;; coll type
        (list [0 0] [0 1]) false
        '[(0 1) [0 2]] false)
+  ;; squares "abstraction"
+  (is (= (domino-squares [[0 1] [1 1]]) [[0 1] [1 1]]))
+  ;; orientation
   (is (horizontal? [[5 9] [5 10]]))
   (is (horizontal? [[5 10] [5 9]]))
   (is (not (horizontal? [[9 5] [10 5]]))))
+
+(deftest boards-and-moves
+  (let [empty (mk-board [2 3])
+        tile [[0 2] [1 2]]
+        move0 (place-domino empty tile 0)]
+    ;; impl
+    (is (= empty [[nil nil nil] [nil nil nil]]))
+    (is (= move0 [[nil nil 0] [nil nil 0]]))
+    ;; impl - non-vertical
+    (is (= (place-domino empty [[0 0] [0 1]] 5)
+           [[5 5 nil] [nil nil nil]]))
+    ;; api
+    (is (= (lookup-square empty [0 2]) nil))
+    (is (= (lookup-square move0 [0 2]) 0))
+    (is (= (lookup-square move0 [1 2]) 0))
+    (is (= (lookup-square move0 [1 1]) nil))))
 
 (deftest inspection
   (is (horizontal-space? (mk-board [3 4])))

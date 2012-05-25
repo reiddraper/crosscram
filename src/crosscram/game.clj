@@ -44,29 +44,11 @@ This will sometimes simply be called a game value.")
 ;; TODO(timmc:2012-05-23) Should we canonicalize the order of the squares in
 ;; the domino on receipt from a bot?
 
-;; Utils
+;;;; Utils
 
-(defn- abs [x] (if (> 0 x) (- x) x))
+(defn- abs [x] (if (< x 0) (- x) x))
 
-;; API
-
-(defn mk-board
-  "Given a dimensions vector of [rows, columns], generate an empty board."
-  [[rows columns]]
-  (vec (repeat rows (vec (repeat columns nil))))) ;; TODO dimension-agnostic
-
-(defn domino-squares
-  "Return a sequence of the coordinates occupied by a domino."
-  [domino]
-  (seq domino))
-
-(defn horizontal?
-  "Checks if the domino is horizontal (that is, the second coordinates
-differ by 1, but the first coordinates are equal.) Assumes domino is
-otherwise valid."
-  [domino]
-  (let [[[r0 c0] [r1 c1]] domino]
-    (and (= r0 r1) (= 1 (abs (- c0 c1))))))
+;;;; Dominoes
 
 (defn valid-domino?
   "Return true iff the value is a valid domino."
@@ -88,22 +70,30 @@ otherwise valid."
            (xor2 (= (abs (- r0 r1)) 1)
                  (= (abs (- c0 c1)) 1))))))
 
+(defn domino-squares
+  "Return a sequence of the coordinates occupied by a valid domino."
+  [domino]
+  (seq domino))
+
+(defn horizontal?
+  "Checks if the domino is horizontal (that is, the second coordinates
+differ by 1, but the first coordinates are equal.) Assumes domino is
+otherwise valid."
+  [domino]
+  (let [[[r0 c0] [r1 c1]] domino]
+    (and (= r0 r1) (= 1 (abs (- c0 c1))))))
+
+;;;; Boards
+
+(defn mk-board
+  "Given a dimensions vector of [rows, columns], generate an empty board."
+  [[rows columns]]
+  (vec (repeat rows (vec (repeat columns nil))))) ;; TODO dimension-agnostic
+
 (defn horizontal-space?
   "Return logical true if there is at least one place for a horizontal move."
   [board]
   (some (fn [row] (some (partial = [nil nil]) (partition 2 1 row))) board))
-
-(defn ^:internal set-square
-  "Set the value of a square in a board."
-  [board square val]
-  (assoc-in board square val))
-
-(defn place-domino
-  "Place a domino on the board, assumed to be a valid move. The returned
-board will have the specified move ordinal in the squares covered by the
-domino."
-  [board domino move-ord]
-  (reduce #(set-square % %2 move-ord) board (domino-squares domino)))
 
 (defn lookup-square
   "Discover if a board position is empty. Given a location [r c] on a board,
@@ -112,12 +102,28 @@ coordinates produce ::outside-board value."
   [board square]
   (get-in board square ::outside-board))
 
+(defn ^:internal set-square
+  "Set the value of a square in a board."
+  [board square val]
+  (assoc-in board square val))
+
+;;;; Moving
+
+(defn place-domino
+  "Place a domino on the board, assumed to be a valid move. The returned
+board will have the specified move ordinal in the squares covered by the
+domino."
+  [board domino move-ord]
+  (reduce #(set-square % %2 move-ord) board (domino-squares domino)))
+
 (defn valid-move?
   "Checks if the domino may be placed on the board (contained
 by board, does not overlap other pieces.) Assumes the domino is an
 otherwise valid piece in either orientation."
   [board domino]
   (every? #(nil? (lookup-square board %)) (domino-squares domino)))
+
+;;;; Games
 
 (defn mk-game
   "Given the dimensions of a board (rows, columns) create a blank game
