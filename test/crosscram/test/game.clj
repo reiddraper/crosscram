@@ -35,7 +35,18 @@
        [[0 0 1] [0 1 1]] false
        ;; coll type
        (list [0 0] [0 1]) false
-       '[(0 1) [0 2]] false))
+       '[(0 1) [0 2]] false)
+  (is (horizontal? [[5 9] [5 10]]))
+  (is (horizontal? [[5 10] [5 9]]))
+  (is (not (horizontal? [[9 5] [10 5]]))))
+
+(deftest inspection
+  (is (horizontal-space? (mk-board [3 4])))
+  (is (not (horizontal-space? (mk-board [1 1]))))
+  (is (horizontal-space? (place-domino (mk-board [2 3]) [[0 0] [1 0]] 0)))
+  (is (not (horizontal-space? (place-domino (mk-board [2 3]) [[0 1] [1 1]] 0))))
+  (is (horizontal-space? (place-domino (mk-board [2 3]) [[0 2] [1 2]] 0)))
+  (is (horizontal-space? (place-domino (mk-board [2 3]) [[0 1] [0 2]] 0))))
 
 (deftest validity-moves
   (let [single (place-domino (mk-board [4 4]) [[1 1] [2 1]] 0)]

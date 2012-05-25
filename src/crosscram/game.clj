@@ -44,6 +44,12 @@ This will sometimes simply be called a game value.")
 ;; TODO(timmc:2012-05-23) Should we canonicalize the order of the squares in
 ;; the domino on receipt from a bot?
 
+;; Utils
+
+(defn- abs [x] (if (> 0 x) (- x) x))
+
+;; API
+
 (defn mk-board
   "Given a dimensions vector of [rows, columns], generate an empty board."
   [[rows columns]]
@@ -53,6 +59,14 @@ This will sometimes simply be called a game value.")
   "Return a sequence of the coordinates occupied by a domino."
   [domino]
   (seq domino))
+
+(defn horizontal?
+  "Checks if the domino is horizontal (that is, the second coordinates
+differ by 1, but the first coordinates are equal.) Assumes domino is
+otherwise valid."
+  [domino]
+  (let [[[r0 c0] [r1 c1]] domino]
+    (and (= r0 r1) (= 1 (abs (- c0 c1))))))
 
 (defn valid-domino?
   "Return true iff the value is a valid domino."
@@ -66,14 +80,18 @@ This will sometimes simply be called a game value.")
                     (= (count %) 2)) ;; TODO dimension-agnostic
         natural? #(and (integer? %) (<= 0 %))
         xor2 #(or (and %1 (not %2))
-                  (and %2 (not %1)))
-        abs #(if (> 0 %) (- %) %)]
+                  (and %2 (not %1)))]
     (and (vec2? val)
          (every? vec2? val)
          (every? natural? (apply concat val))
          (let [[[r0 c0] [r1 c1]] val]
            (xor2 (= (abs (- r0 r1)) 1)
                  (= (abs (- c0 c1)) 1))))))
+
+(defn horizontal-space?
+  "Return logical true if there is at least one place for a horizontal move."
+  [board]
+  (some (fn [row] (some (partial = [nil nil]) (partition 2 1 row))) board))
 
 (defn ^:internal set-square
   "Set the value of a square in a board."
@@ -95,9 +113,9 @@ coordinates produce ::outside-board value."
   (get-in board square ::outside-board))
 
 (defn valid-move?
-  "Checks if the domino would be a valid move for the board (contained
+  "Checks if the domino may be placed on the board (contained
 by board, does not overlap other pieces.) Assumes the domino is an
-otherwise valid piece."
+otherwise valid piece in either orientation."
   [board domino]
   (every? #(nil? (lookup-square board %)) (domino-squares domino)))
 
