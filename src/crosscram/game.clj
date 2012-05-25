@@ -13,8 +13,12 @@ A domino is a vector of two squares: [[r0 c0] [r1 c1]].
 The order of the squares in a vector is not important, but the game engine
 will not alter it.
 
-A game history is a vector of dominoes in order of play. The index of each
-domino in the vector is the ordinal of the move that placed it.
+A move is either a domino or the keyword ::out (:crosscram.game/out),
+indicating that player could not make a move (and therefore lost.)
+
+A game history is a vector of moves. The index of each move is called
+its ordinal; the move at index 0 was the first move. A new game will have
+an empty history vector. A finished game will be terminated with ::out.
 
 The board contains an alternate view of history. Each cell contains either
 the ordinal (from the history vector) of the move that covered that square,
@@ -24,6 +28,7 @@ A gamestate value (which is provided to the bot) is a map of:
 :board - a board value, as defined above
 :dims - a vector of [row-count column-count]
 :history - a history value, as defined above
+:player-id - 0 or 1
 
 This will sometimes simply be called a game value.")
 
@@ -39,7 +44,7 @@ This will sometimes simply be called a game value.")
 ;; TODO(timmc:2012-05-23) Should we canonicalize the order of the squares in
 ;; the domino on receipt from a bot?
 
-(defn board
+(defn mk-board
   "Given a dimensions vector of [rows, columns], generate an empty board."
   [[rows columns]]
   (vec (repeat rows (vec (repeat columns nil))))) ;; TODO dimension-agnostic
@@ -95,3 +100,25 @@ by board, does not overlap other pieces.) Assumes the domino is an
 otherwise valid piece."
   [board domino]
   (every? #(nil? (lookup-square board %)) (domino-squares domino)))
+
+(defn mk-game
+  "Given the dimensions of a board (rows, columns) create a blank game
+for the indicated player. The player ID may be 0 or 1. The resulting
+gamestate will be transposed if player-id is 1."
+  [dims player-id]
+  (let [players (count dims)
+        dims (vec (take players (drop player-id (cycle dims))))]
+    {:board (mk-board dims)
+     :dims dims
+     :history []
+     :player-id player-id}))
+
+(defn move
+  "Add a move to a game. May be a domino or ::out."
+  [game move]
+  (let [ord (count (:history game))
+        board (:board game)
+        board (if (vector? move) (place-domino board move ord) board)]
+    (-> game
+        (assoc-in [:history ord] move)
+        (assoc :board board))))
