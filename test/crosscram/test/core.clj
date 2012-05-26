@@ -2,5 +2,6 @@
   (:use [crosscram.core])
   (:use [clojure.test]))
 
-(deftest replace-me ;; FIXME: write
-  (is false "No tests have been written."))
+(deftest basics
+  (is (= (opposite :horizontal) :vertical))
+  (is (= (opposite :vertical) :horizontal)))
