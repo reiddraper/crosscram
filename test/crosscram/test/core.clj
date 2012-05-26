@@ -1,4 +1,5 @@
 (ns crosscram.test.core
+  (:require [clojure.pprint :as pp])
   (:use [crosscram.core])
   (:use [clojure.test]))
 
@@ -21,7 +22,8 @@
         bot-v (calvinist [[3 0] [3 1]])
         game (new-game 2 4)
         done (play game bot-h bot-v)]
-    (is (= (count (:history done)) 3)))
+    (is (= (count (:history done)) 3))
+    (is (= (winner done) :horizontal)))
   ;; Completely filled board
   ;; 0013
   ;; 2213
@@ -29,7 +31,8 @@
         bot-v (calvinist [[2 0] [2 1]] [[3 0] [3 1]])
         game (new-game 2 4)
         done (play game bot-h bot-v)]
-    (is (= (count (:history done)) 4)))
+    (is (= (count (:history done)) 4))
+    (is (= (winner done) :vertical)))
   ;; Vertical wins, vertical spaces remain
   ;; 00-
   ;; -1-
@@ -38,7 +41,8 @@
         bot-v (calvinist [[1 1] [1 2]])
         game (new-game 3 3)
         done (play game bot-h bot-v)]
-    (is (= (count (:history done)) 2)))
+    (is (= (count (:history done)) 2))
+    (is (= (winner done) :vertical)))
   ;; Horizontal wins, horizontal spaces remain
   ;; 22-
   ;; 001
@@ -47,4 +51,5 @@
         bot-v (calvinist [[2 1] [2 2]])
         game (new-game 3 3)
         done (play game bot-h bot-v)]
-    (is (= (count (:history done)) 3))))
+    (is (= (count (:history done)) 3))
+    (is (= (winner done) :horizontal))))
