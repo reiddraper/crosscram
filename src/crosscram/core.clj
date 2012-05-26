@@ -52,6 +52,7 @@
    :history []})
 
 (defn play [game bot-a bot-b]
+  "Play a game and return the resulting game-state."
   (loop [g game
          bot-funs (cycle [bot-a bot-b])]
     (if (over? g)
