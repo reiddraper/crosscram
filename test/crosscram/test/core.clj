@@ -1,5 +1,4 @@
 (ns crosscram.test.core
-  (:require [clojure.pprint :as pp])
   (:use [crosscram.core])
   (:use [clojure.test]))
 
