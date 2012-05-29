@@ -45,18 +45,18 @@
     (is (= (lookup-square move0 [1 1]) nil))))
 
 (deftest inspection
-  (is (= (set (map set (all-horiz-spaces (place-domino (mk-board [2 4])
-                                                       [[1 2] [1 3]] 0))))
+  (is (= (set (map set (available-moves (place-domino (mk-board [2 4])
+                                                      [[1 2] [1 3]] 0))))
          #{#{[0 0] [0 1]} #{[0 1] [0 2]} #{[0 2] [0 3]} #{[1 0] [1 1]}}))
-  (is (= (count (all-horiz-spaces (place-domino (mk-board [5 3])
-                                                [[1 1] [2 1]] 0)))
+  (is (= (count (available-moves (place-domino (mk-board [5 3])
+                                               [[1 1] [2 1]] 0)))
          6))
-  (is (horizontal-space? (mk-board [3 4])))
-  (is (not (horizontal-space? (mk-board [1 1]))))
-  (is (horizontal-space? (place-domino (mk-board [2 3]) [[0 0] [1 0]] 0)))
-  (is (not (horizontal-space? (place-domino (mk-board [2 3]) [[0 1] [1 1]] 0))))
-  (is (horizontal-space? (place-domino (mk-board [2 3]) [[0 2] [1 2]] 0)))
-  (is (horizontal-space? (place-domino (mk-board [2 3]) [[0 1] [0 2]] 0))))
+  (is (can-move? (mk-board [3 4])))
+  (is (not (can-move? (mk-board [1 1]))))
+  (is (can-move? (place-domino (mk-board [2 3]) [[0 0] [1 0]] 0)))
+  (is (not (can-move? (place-domino (mk-board [2 3]) [[0 1] [1 1]] 0))))
+  (is (can-move? (place-domino (mk-board [2 3]) [[0 2] [1 2]] 0)))
+  (is (can-move? (place-domino (mk-board [2 3]) [[0 1] [0 2]] 0))))
 
 (deftest rotations
   (let [d [[1 2] [0 2]]]

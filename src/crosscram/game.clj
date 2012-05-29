@@ -107,8 +107,9 @@ perspective. Player ID will be used modulo 2."
     board
     (transpose board)))
 
-(defn all-horiz-spaces
-  "Generate a lazy seq of all possible horizontal moves."
+(defn available-moves
+  "Generate a lazy seq of all possible horizontal moves. To get opponent
+moves, rotate the board first."
   [board]
   (for [[r row] (map-indexed vector board)
         found (keep-indexed (fn [c pair] (when (= [nil nil] pair)
@@ -116,10 +117,10 @@ perspective. Player ID will be used modulo 2."
                             (partition 2 1 row))]
     found))
 
-(defn horizontal-space?
+(defn can-move?
   "Return logical true if there is at least one place for a horizontal move."
   [board]
-  (boolean (seq (all-horiz-spaces board))))
+  (boolean (seq (available-moves board))))
 
 (defn lookup-square
   "Discover if a board position is empty. Given a location [r c] on a board,
