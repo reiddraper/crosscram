@@ -89,7 +89,7 @@
 (defn board [rows columns]
   (vec (repeat rows
                (vec
-                 (take columns (repeat nil))))))
+                 (repeat columns nil)))))
 
 (defn add-piece [board piece a b]
   (-> board
