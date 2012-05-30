@@ -39,6 +39,14 @@
     (is (= (place-domino empty [[0 0] [0 1]] 5)
            [[5 5 nil] [nil nil nil]]))
     ;; api
+    (is (= (board-size empty) [2 3]))
+    (are [pos on?] (= (boolean (on-board? empty pos)) on?)
+         [0 0] true
+         [-1 0] false
+         [0 -2] false
+         [2 3] false
+         [1 2] true
+         [2 2] false)
     (is (= (lookup-square empty [0 2]) nil))
     (is (= (lookup-square move0 [0 2]) 0))
     (is (= (lookup-square move0 [1 2]) 0))

@@ -92,12 +92,31 @@ perspective. Player ID will be used modulo 2."
     domino
     (vec (map (comp vec reverse) domino))))
 
+(defn posint?
+  "Return logical true if given a positive integer."
+  [x]
+  (and (integer? x) (pos? x)))
+
 ;;;; Boards
 
 (defn mk-board
-  "Given a dimensions vector of [rows, columns], generate an empty board."
+  "Given a dimensions vector of [rows, columns], generate an empty board.
+Both dimensions must be positive integers."
   [[rows columns]]
+  {:pre [(posint? rows) (posint? columns)]}
   (vec (repeat rows (vec (repeat columns nil))))) ;; TODO dimension-agnostic
+
+(defn board-size
+  "Get the board size as a vector of row, column."
+  [board]
+  [(count board) (count (first board))])
+
+(defn on-board?
+  "Test if a row/column coordinate pair is a board coordinate."
+  [board [rv cv]]
+  (let [[rows cols] (board-size board)]
+    (and (<= 0 rv (dec rows))
+         (<= 0 cv (dec cols)))))
 
 (defn rotate-board
   "Rotate a board from player 0's perspective to the specified player's
