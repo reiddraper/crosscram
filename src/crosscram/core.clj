@@ -42,7 +42,9 @@
       (update-in [:history]
                  #(conj % {:player (:next-player game) :move [pos-a pos-b]}))
       (assoc :next-player
-        (opposite (:next-player game))))))
+        (opposite (:next-player game)))
+      (assoc :rows (:columns game))
+      (assoc :columns (:rows game)))))
 
 (defn new-game [rows columns]
   {:board (board/board rows columns)

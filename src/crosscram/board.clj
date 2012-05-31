@@ -78,6 +78,8 @@
     (generate-all-opponents-moves game)))
 
 (defn available-moves [game]
+  {:pre [(every? game [:board :rows :columns])
+         (= (:rows game) (count (:board game)))]}
   (filter
     (fn [arg] (location-empty? (:board game) (first arg) (last arg)))
     (generate-all-my-moves game)))
