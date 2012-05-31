@@ -10,7 +10,7 @@
 
 (defn above-saves?
   [game [[r1 c1] [r2 c2]]]
-  (let [above-row (- r1 1)
+  (let [above-row (dec r1)
         above-above-row (- r1 2)]
     (and (valid-empty-pair? game [[above-row c1] [above-row c2]])
          (not (valid-empty-pair?
@@ -18,7 +18,7 @@
 
 (defn below-saves?
   [game [[r1 c1] [r2 c2]]]
-  (let [below-row (+ r1 1)
+  (let [below-row (inc r1)
         below-below-row (+ r1 2)]
     (and (valid-empty-pair? game [[below-row c1] [below-row c2]])
          (not (valid-empty-pair?
