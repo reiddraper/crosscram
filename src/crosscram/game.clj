@@ -170,7 +170,7 @@ otherwise valid piece in either orientation."
 
 ;;;; Games
 
-(defn mk-game
+(defn make-game
   "Given the dimensions of a board (rows, columns) create a blank game
 for the indicated player. The player ID may be 0 or 1. The resulting
 gamestate will be transposed if player-id is 1."

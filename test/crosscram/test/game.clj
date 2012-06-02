@@ -96,9 +96,9 @@
          [[4 1] [3 1]] false)))
 
 (deftest games
-  (is (= (mk-game [2 3] 1)
+  (is (= (make-game [2 3] 1)
          {:board (make-board [3 2]), :dims [3 2], :history [], :player-id 1}))
-  (let [game-base (mk-game [2 3] 0)
+  (let [game-base (make-game [2 3] 0)
         move-0 [[1 1] [0 1]]
         game-0 (move game-base move-0)
         game-1 (move game-0 :crosscram.game/out)]
