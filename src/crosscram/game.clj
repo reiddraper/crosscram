@@ -46,7 +46,6 @@ This will sometimes simply be called a game value.")
 
 ;;;; Utils
 
-(defn- abs [x] (if (< x 0) (- x) x))
 (defn transpose [vv] (vec (apply map vector vv)))
 
 ;;;; Dominoes
@@ -68,8 +67,8 @@ This will sometimes simply be called a game value.")
          (every? vec2? val)
          (every? natural? (apply concat val))
          (let [[[r0 c0] [r1 c1]] val]
-           (xor2 (= (abs (- r0 r1)) 1)
-                 (= (abs (- c0 c1)) 1))))))
+           (xor2 (= (Math/abs (long (- r0 r1))) 1)
+                 (= (Math/abs (long (- c0 c1))) 1))))))
 
 (defn domino-squares
   "Return a sequence of the coordinates occupied by a valid domino."
@@ -82,7 +81,7 @@ differ by 1, but the first coordinates are equal.) Assumes domino is
 otherwise valid."
   [domino]
   (let [[[r0 c0] [r1 c1]] domino]
-    (and (= r0 r1) (= 1 (abs (- c0 c1))))))
+    (and (= r0 r1) (= 1 (Math/abs (long (- c0 c1)))))))
 
 (defn rotate-domino
   "Rotate a domino from player 0's perspective to the specified player's
