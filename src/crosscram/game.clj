@@ -13,12 +13,11 @@ A domino is a vector of two squares: [[r0 c0] [r1 c1]].
 The order of the squares in a vector is not important, but the game engine
 will not alter it.
 
-A move is either a domino or the keyword ::out (:crosscram.game/out),
-indicating that player could not make a move (and therefore lost.)
+A move is simply a domino.
 
 A game history is a vector of moves. The index of each move is called
 its ordinal; the move at index 0 was the first move. A new game will have
-an empty history vector. A finished game will be terminated with ::out.
+an empty history vector.
 
 The board contains an alternate view of history. Each cell contains either
 the ordinal (from the history vector) of the move that covered that square,
@@ -28,7 +27,7 @@ A gamestate value (which is provided to the bot) is a map of:
 :board - a board value, as defined above
 :dims - a vector of [row-count column-count]
 :history - a history value, as defined above
-:player-id - 0 or 1
+:player-id - 0 or 1, indicating which player's view this is
 
 This will sometimes simply be called a game value.")
 
@@ -85,11 +84,13 @@ otherwise valid."
 
 (defn rotate-domino
   "Rotate a domino from player 0's perspective to the specified player's
-perspective. Player ID will be used modulo 2."
-  [domino player-id]
-  (if (zero? (mod player-id 2))
-    domino
-    (vec (map (comp vec reverse) domino))))
+perspective. (Unary form defaults to 1.) Player ID will be used modulo 2."
+  ([domino]
+     (rotate-domino domino 1))
+  ([domino player-id]
+     (if (zero? (mod player-id 2))
+       domino
+       (vec (map (comp vec reverse) domino)))))
 
 (defn posint?
   "Return logical true if given a positive integer."
@@ -119,11 +120,13 @@ Both dimensions must be positive integers."
 
 (defn rotate-board
   "Rotate a board from player 0's perspective to the specified player's
-perspective. Player ID will be used modulo 2."
-  [board player-id]
-  (if (zero? (mod player-id 2))
-    board
-    (transpose board)))
+perspective. (Unary form defaults to 1.) Player ID will be used modulo 2."
+  ([board]
+     (rotate-board board 1))
+  ([board player-id]
+     (if (zero? (mod player-id 2))
+       board
+       (transpose board))))
 
 (defn available-moves
   "Generate a lazy seq of all possible horizontal moves. To get opponent
@@ -172,8 +175,7 @@ otherwise valid piece in either orientation."
 
 (defn make-game
   "Given the dimensions of a board (rows, columns) create a blank game
-for the indicated player. The player ID may be 0 or 1. The resulting
-gamestate will be transposed if player-id is 1."
+for the indicated player. The player ID may be 0 or 1."
   [dims player-id]
   (let [players (count dims)
         dims (vec (take players (drop player-id (cycle dims))))]
@@ -183,11 +185,24 @@ gamestate will be transposed if player-id is 1."
      :player-id player-id}))
 
 (defn move
-  "Add a move to a game. May be a domino or ::out."
+  "Add a move (a domino) to a game."
   [game move]
   (let [ord (count (:history game))
-        board (:board game)
-        board (if (vector? move) (place-domino board move ord) board)]
+        board (place-domino (:board game) move ord)]
     (-> game
         (assoc-in [:history ord] move)
         (assoc :board board))))
+
+(defn rotate-game
+  "Rotate a game from player 0's perspective to the specified player's
+perspective. (Unary form defaults to 1.) Player ID will be used modulo 2.
+NOTE: This updates the :player-id key as well."
+  ([game]
+     (rotate-game game 1))
+  ([game player-id]
+     (if (zero? (mod player-id 2))
+       game
+       {:board (rotate-board (:board game) player-id)
+        :dims (let [[r c] (:dims game)] [c r])
+        :history (vec (map rotate-domino (:history game)))
+        :player-id (mod (+ (:player-id game) player-id) 2)})))

@@ -68,6 +68,8 @@
 
 (deftest rotations
   (let [d [[1 2] [0 2]]]
+    (is (= (rotate-domino d)
+           (rotate-domino d 1)))
     (is (= (rotate-domino d 1) [[2 1] [2 0]]))
     (is (= (rotate-domino d 0) d))
     (is (= (rotate-domino d 1) (rotate-domino d -3)))
@@ -79,6 +81,8 @@
            (rotate-board (place-domino (rotate-board b57 1)
                                        (rotate-domino p 1) 0)
                          1)))
+    (is (= (rotate-board move0)
+           (rotate-board move0 1)))
     (is (= (rotate-board move0 0) move0))
     (is (= (rotate-board move0 1) (rotate-board move0 -3)))
     (is (= (rotate-board move0 4) (rotate-board move0 18)))))
@@ -99,10 +103,21 @@
   (is (= (make-game [2 3] 1)
          {:board (make-board [3 2]), :dims [3 2], :history [], :player-id 1}))
   (let [game-base (make-game [2 3] 0)
-        move-0 [[1 1] [0 1]]
+        move-0 [[0 0] [1 0]]
         game-0 (move game-base move-0)
-        game-1 (move game-0 :crosscram.game/out)]
+        move-1 [[0 1] [0 2]]
+        game-1 (move game-0 move-1)]
     (is (= (:board game-0) (place-domino (make-board [2 3]) move-0 0)))
     (is (= (:history game-0) [move-0]))
-    (is (= (:board game-1) (:board game-0)))
-    (is (= (:history game-1) [move-0 :crosscram.game/out]))))
+    (is (= (:history game-1) [move-0 move-1]))
+    ;; rotations
+    (is (= (rotate-game game-1 0) game-1))
+    (is (= (rotate-game game-1)
+           (rotate-game game-1 1)))
+    (is (= (rotate-game game-1 -3) (rotate-game game-1 1)))
+    (is (= (rotate-game game-1 18) (rotate-game game-1 0)))
+    (is (= (rotate-game game-1 1)
+           {:board (rotate-board (:board game-1) 1)
+            :dims [3 2]
+            :history [(rotate-domino move-0 1) (rotate-domino move-1 1)]
+            :player-id 1}))))
