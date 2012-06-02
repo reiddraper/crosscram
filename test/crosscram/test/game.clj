@@ -29,7 +29,7 @@
   (is (not (horizontal? [[9 5] [10 5]]))))
 
 (deftest boards-and-moves
-  (let [empty (mk-board [2 3])
+  (let [empty (make-board [2 3])
         tile [[0 2] [1 2]]
         move0 (place-domino empty tile 0)]
     ;; impl
@@ -53,18 +53,18 @@
     (is (= (lookup-square move0 [1 1]) nil))))
 
 (deftest inspection
-  (is (= (set (map set (available-moves (place-domino (mk-board [2 4])
+  (is (= (set (map set (available-moves (place-domino (make-board [2 4])
                                                       [[1 2] [1 3]] 0))))
          #{#{[0 0] [0 1]} #{[0 1] [0 2]} #{[0 2] [0 3]} #{[1 0] [1 1]}}))
-  (is (= (count (available-moves (place-domino (mk-board [5 3])
+  (is (= (count (available-moves (place-domino (make-board [5 3])
                                                [[1 1] [2 1]] 0)))
          6))
-  (is (can-move? (mk-board [3 4])))
-  (is (not (can-move? (mk-board [1 1]))))
-  (is (can-move? (place-domino (mk-board [2 3]) [[0 0] [1 0]] 0)))
-  (is (not (can-move? (place-domino (mk-board [2 3]) [[0 1] [1 1]] 0))))
-  (is (can-move? (place-domino (mk-board [2 3]) [[0 2] [1 2]] 0)))
-  (is (can-move? (place-domino (mk-board [2 3]) [[0 1] [0 2]] 0))))
+  (is (can-move? (make-board [3 4])))
+  (is (not (can-move? (make-board [1 1]))))
+  (is (can-move? (place-domino (make-board [2 3]) [[0 0] [1 0]] 0)))
+  (is (not (can-move? (place-domino (make-board [2 3]) [[0 1] [1 1]] 0))))
+  (is (can-move? (place-domino (make-board [2 3]) [[0 2] [1 2]] 0)))
+  (is (can-move? (place-domino (make-board [2 3]) [[0 1] [0 2]] 0))))
 
 (deftest rotations
   (let [d [[1 2] [0 2]]]
@@ -73,7 +73,7 @@
     (is (= (rotate-domino d 1) (rotate-domino d -3)))
     (is (= (rotate-domino d 4) (rotate-domino d 18))))
   (let [p [[3 4] [2 4]]
-        b57 (mk-board [5 7])
+        b57 (make-board [5 7])
         move0 (place-domino b57 p 0)]
     (is (= (place-domino b57 p 0)
            (rotate-board (place-domino (rotate-board b57 1)
@@ -84,7 +84,7 @@
     (is (= (rotate-board move0 4) (rotate-board move0 18)))))
 
 (deftest validity-moves
-  (let [single (place-domino (mk-board [4 4]) [[1 1] [2 1]] 0)]
+  (let [single (place-domino (make-board [4 4]) [[1 1] [2 1]] 0)]
     (are [p e] (= (valid-move? single p) (boolean e))
          [[0 0] [0 1]] true
          [[2 2] [2 3]] true
@@ -97,12 +97,12 @@
 
 (deftest games
   (is (= (mk-game [2 3] 1)
-         {:board (mk-board [3 2]), :dims [3 2], :history [], :player-id 1}))
+         {:board (make-board [3 2]), :dims [3 2], :history [], :player-id 1}))
   (let [game-base (mk-game [2 3] 0)
         move-0 [[1 1] [0 1]]
         game-0 (move game-base move-0)
         game-1 (move game-0 :crosscram.game/out)]
-    (is (= (:board game-0) (place-domino (mk-board [2 3]) move-0 0)))
+    (is (= (:board game-0) (place-domino (make-board [2 3]) move-0 0)))
     (is (= (:history game-0) [move-0]))
     (is (= (:board game-1) (:board game-0)))
     (is (= (:history game-1) [move-0 :crosscram.game/out]))))

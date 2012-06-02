@@ -99,7 +99,7 @@ perspective. Player ID will be used modulo 2."
 
 ;;;; Boards
 
-(defn mk-board
+(defn make-board
   "Given a dimensions vector of [rows, columns], generate an empty board.
 Both dimensions must be positive integers."
   [[rows columns]]
@@ -178,7 +178,7 @@ gamestate will be transposed if player-id is 1."
   [dims player-id]
   (let [players (count dims)
         dims (vec (take players (drop player-id (cycle dims))))]
-    {:board (mk-board dims)
+    {:board (make-board dims)
      :dims dims
      :history []
      :player-id player-id}))
