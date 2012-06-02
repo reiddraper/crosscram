@@ -1,6 +1,11 @@
 (ns crosscram.test.board
   (:use clojure.test
-        crosscram.board))
+        crosscram.board
+        [crosscram.core :only (new-game)]))
+
+(deftest termination
+  (let [game56 (new-game 5 6)]
+    (is (= (count (available-moves game56)) 25))))
 
 (deftest playable
   (are [c b] (= (boolean (@#'crosscram.board/two-nil? c)) b)

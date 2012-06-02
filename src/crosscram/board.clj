@@ -1,5 +1,4 @@
-(ns crosscram.board
-  (:require [clojure.core.match :as match]))
+(ns crosscram.board)
 
 ;;;
 ;;; Validation Functions
@@ -49,14 +48,14 @@
        (nil? (two-d-get board pos-b))))
 
 (defn- generate-horizontal-for-row [columns row]
-  (take (- columns 1)
+  (take (dec columns)
         (for [x (range columns)]
-          [[row x] [row  (+ 1 x)]])))
+          [[row x] [row  (inc x)]])))
 
 (defn- generate-vertical-for-column [rows column]
-  (take (- rows 1)
+  (take (dec rows)
         (for [x (range rows)]
-          [[x column] [(+ 1 x) column]])))
+          [[x column] [(inc x) column]])))
 
 (defn- generate-horizontal [rows columns]
   (mapcat (partial generate-horizontal-for-row columns)
@@ -78,6 +77,8 @@
     (generate-all-opponents-moves game)))
 
 (defn available-moves [game]
+  {:pre [(every? game [:board :rows :columns])
+         (= (:rows game) (count (:board game)))]}
   (filter
     (fn [arg] (location-empty? (:board game) (first arg) (last arg)))
     (generate-all-my-moves game)))
@@ -89,7 +90,7 @@
 (defn board [rows columns]
   (vec (repeat rows
                (vec
-                 (take columns (repeat nil))))))
+                 (repeat columns nil)))))
 
 (defn add-piece [board piece a b]
   (-> board
