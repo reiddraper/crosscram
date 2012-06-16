@@ -20,8 +20,10 @@ gives the second player a transposed view of the board.)"
 ;; TODO: Strip metadata from returned dominoes. Player could be storing state
 ;; there or otherwise be up to no good.
 
-(defn over? [game]
-  (= 0 (count (game/available-moves (:board game)))))
+(def over?
+  "Returns true if there are no horizontal moves possible, false otherwise. 
+Takes a board as argument."
+  (complement game/can-move?))
 
 (defn score [game1 game2]
   (let [pair [game1 game2]]
@@ -37,7 +39,7 @@ gives the second player a transposed view of the board.)"
   "Play a game and return the resulting game-state."
   (loop [g game
          bot-funs (cycle [bot-a bot-b])]
-    (if (over? g)
+    (if (over? (:board g))
       g
       (let [new-game (game/rotate-game (game/move g ((first bot-funs) g)))]
         (recur new-game (rest bot-funs))))))

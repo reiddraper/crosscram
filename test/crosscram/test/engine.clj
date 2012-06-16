@@ -11,8 +11,8 @@
                       (game/move [[2 0] [2 1]])
                       (game/rotate-game)
                       (game/move [[0 0] [0 1]]))]
-    (is (not (over? game-not-over)))
-    (is (over? game-over))))
+    (is (not (over? (:board game-not-over))))
+    (is (over? (:board game-over)))))
 
 (defn calvinist
   "Make a bot that will return exactly this sequence of moves."
