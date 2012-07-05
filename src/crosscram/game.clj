@@ -69,6 +69,12 @@ This will sometimes simply be called a game value.")
            (xor2 (= (Math/abs (long (- r0 r1))) 1)
                  (= (Math/abs (long (- c0 c1))) 1))))))
 
+(defn canonical-domino
+  "Answer a domino such that for all representations D1,D2 of a
+domino, (= (canonical-domino d1) (canonical-domino d2))"
+  [domino]
+  (into [] (sort domino)))
+
 (defn domino-squares
   "Return a sequence of the coordinates occupied by a valid domino."
   [domino]
@@ -190,7 +196,7 @@ for the indicated player. The player ID may be 0 or 1."
   (let [ord (count (:history game))
         board (place-domino (:board game) move ord)]
     (-> game
-        (assoc-in [:history ord] move)
+        (assoc-in [:history ord] (canonical-domino move))
         (assoc :board board))))
 
 (defn rotate-game

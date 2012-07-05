@@ -26,7 +26,10 @@
   ;; orientation
   (is (horizontal? [[5 9] [5 10]]))
   (is (horizontal? [[5 10] [5 9]]))
-  (is (not (horizontal? [[9 5] [10 5]]))))
+  (is (not (horizontal? [[9 5] [10 5]])))
+  ;; canonical order
+  (is (= (canonical-domino [[0 1] [2 3]])
+         (canonical-domino [[2 3] [0 1]]))))
 
 (deftest boards-and-moves
   (let [empty (make-board [2 3])
