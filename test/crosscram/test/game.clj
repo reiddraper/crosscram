@@ -1,5 +1,6 @@
 (ns crosscram.test.game
   (:use clojure.test
+        clojure.template
         crosscram.game))
 
 (deftest dominoes
@@ -92,7 +93,14 @@
 
 (deftest validity-moves
   (let [single (place-domino (make-board [4 4]) [[1 1] [2 1]] 0)]
-    (are [p e] (= (valid-move? single p) (boolean e))
+    (do-template [p e]
+                 (do (is (= (valid-move? single p) (boolean e)))
+                     (if e
+                       (is (place-domino single p 1)
+                           (str "valid move " p))
+                       (is (thrown? AssertionError
+                                    (place-domino single p 1))
+                           (str "invalid move " p))))
          [[0 0] [0 1]] true
          [[2 2] [2 3]] true
          ;; overlap

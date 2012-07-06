@@ -163,19 +163,20 @@ coordinates produce ::outside-board value."
 
 ;;;; Moving
 
-(defn place-domino
-  "Place a domino on the board, assumed to be a valid move. The returned
-board will have the specified move ordinal in the squares covered by the
-domino."
-  [board domino move-ord]
-  (reduce #(set-square % %2 move-ord) board (domino-squares domino)))
-
 (defn valid-move?
   "Checks if the domino may be placed on the board (contained
 by board, does not overlap other pieces.) Assumes the domino is an
 otherwise valid piece in either orientation."
   [board domino]
   (every? #(nil? (lookup-square board %)) (domino-squares domino)))
+
+(defn place-domino
+  "Place a domino on the board, assumed to be a valid move. The returned
+board will have the specified move ordinal in the squares covered by the
+domino."
+  [board domino move-ord]
+  {:pre [(valid-move? board domino)]}
+  (reduce #(set-square % %2 move-ord) board (domino-squares domino)))
 
 ;;;; Games
 
