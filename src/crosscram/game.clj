@@ -36,12 +36,10 @@ This will sometimes simply be called a game value.")
 ;; In 2 dimensions:
 ;; - A board is a 2-level nesting of vectors. The top-level vector contains
 ;;   the row vectors.
-;; - The order of the squares in a domino is not currently important to
-;;   the game engine, but the history will contain the same ordering
-;;   the bots provide.
-
-;; TODO(timmc:2012-05-23) Should we canonicalize the order of the squares in
-;; the domino on receipt from a bot?
+;; - The order of the squares in a domino is canonically in low to high
+;;   order along the x axis. Bots are allowed to return dominoes in either
+;;   order, but some methods may declare a need for canonical order. The
+;;   history will contain canonical dominoes.
 
 ;;;; Utils
 
@@ -52,9 +50,6 @@ This will sometimes simply be called a game value.")
 (defn valid-domino?
   "Return true iff the value is a valid domino."
   [val]
-  ;; TODO(timmc): loosen restriction on vector-ness and accept
-  ;; anything seqable? Maybe write a "cleaner" fn that returns
-  ;; a cleaned-up domnino, or nil.
   (let [vec2? #(and (sequential? %)
                     (associative? %)
                     (counted? %)
