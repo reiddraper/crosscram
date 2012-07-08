@@ -1,3 +1,7 @@
+Planned additions:
+* Visualization of games, probably via web server
+* Sandboxing of user-submitted code
+
 Ideas to consider:
 * Do bots get to know who their opponent is?
 * Do bots get to keep state between moves? Between runs?
