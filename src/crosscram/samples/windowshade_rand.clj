@@ -8,7 +8,7 @@ remaining rows."
 (def separate (juxt filter remove))
 
 (defn make-move [game]
-  (let [all (game/available-moves game)
+  (let [all (game/available-moves (:board game))
         [e_ o_] (separate (comp even? ffirst) all)
         [ee eo] (separate #(even? (second (first %))) e_)
         [oe oo] (separate #(even? (second (first %))) o_)]

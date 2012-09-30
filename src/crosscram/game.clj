@@ -133,6 +133,7 @@ perspective. (Unary form defaults to 1.) Player ID will be used modulo 2."
   "Generate a lazy seq of all possible horizontal moves. To get opponent
 moves, rotate the board first."
   [board]
+  {:pre [(vector? board)]}
   (for [[r row] (map-indexed vector board)
         found (keep-indexed (fn [c pair] (when (= [nil nil] pair)
                                            [[r c] [r (inc c)]]))

@@ -47,5 +47,6 @@
   (or (above-saves? game move)
       (below-saves? game move)))
 (defn make-move [game]
-  (or (first (filter (partial reserves-move? game) (game/available-moves game)))
-      (first (game/available-moves game))))
+  (or (first (filter (partial reserves-move? game)
+                     (game/available-moves (:board game))))
+      (first (game/available-moves (:board game)))))
